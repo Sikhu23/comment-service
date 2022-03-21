@@ -9,7 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotEmpty;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+
 
 
 @Document(collection = "Comment")
@@ -26,7 +27,7 @@ public class CommentModel {
 
 
 
-    @NotEmpty(message = "post ID is required")
+
     private String postID;
 
     @NotEmpty(message = "commentedBy is required")
@@ -36,8 +37,8 @@ public class CommentModel {
     private String comment;
 
 
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
 }
