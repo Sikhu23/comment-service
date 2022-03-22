@@ -11,9 +11,15 @@ public class CommentService {
     @Autowired
     private CommentRepo commentRepo;
 
+
+    public String deletebyCommentId(String commentId){
+        this.commentRepo.deleteById(commentId);
+        return "Delete CommentID "+commentId+" from DB";
+
     public int commentCount(String postId){
         int count=this.commentRepo.findBypostID(postId).size();
         return count;
+
 
     }
 }
