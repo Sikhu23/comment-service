@@ -2,8 +2,10 @@ package com.commentservice.Service;
 
 
 import com.commentservice.Feign.FeignLike;
+import com.commentservice.Feign.FeignUser;
 import com.commentservice.Model.CommentModel;
 import com.commentservice.Model.FeignRequest;
+import com.commentservice.Model.FeignRequestUser;
 import com.commentservice.Repository.CommentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,9 @@ public class CommentService {
     @Autowired
     private CommentRepo commentRepo;
 
+    @Autowired
+    FeignUser feignUser;
+
 
     public CommentModel saveComment(CommentModel commentModel,String postId) {
         commentModel.setPostID(postId);
@@ -46,8 +51,12 @@ public class CommentService {
         return feignRequest;
     }
 
-    public CommentModel findByCommentId(String commentId) {
-        return this.commentRepo.findById(commentId).get();
+    public FeignRequestUser findByCommentId(String commentId) {
+        FeignRequestUser feignRequest = new FeignRequestUser();
+        feignRequest.setUser(feignUser.findByID(commentRepo.findById(commentId).get().getCommentedBy()));
+        feignRequest.setCommentModel(this.commentRepo.findById(commentId).get());
+
+        return feignRequest;
     }
 
 

@@ -26,8 +26,6 @@ public class CommentModel {
     @Id
     private String commentID;
 
-    @NotEmpty(message = "user ID is required")
-    private String userID;
 
 
 

@@ -6,16 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-
-public class FeignRequest {
-
-    private List<CommentModel> commentModel;
-    private int likesCount;
-
+public class FeignRequestUser {
+    private User user;
+    private CommentModel commentModel;
 }

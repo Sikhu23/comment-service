@@ -3,6 +3,7 @@ package com.commentservice.Controller;
 
 import com.commentservice.Model.CommentModel;
 import com.commentservice.Model.FeignRequest;
+import com.commentservice.Model.FeignRequestUser;
 import com.commentservice.Service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,7 +63,7 @@ public class CommentController {
 
 
     @GetMapping("/posts/{postId}/comments/{commentId}")
-    public ResponseEntity<CommentModel> findByCommentId(@PathVariable("postId") String postId,@PathVariable("commentId") String commentId) {
+    public ResponseEntity<FeignRequestUser> findByCommentId(@PathVariable("postId") String postId, @PathVariable("commentId") String commentId) {
         return new ResponseEntity<>(commentService.findByCommentId(commentId), HttpStatus.ACCEPTED);
     }
 
