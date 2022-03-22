@@ -1,7 +1,9 @@
 package com.commentservice.Service;
 
 
+import com.commentservice.Feign.FeignLike;
 import com.commentservice.Model.CommentModel;
+import com.commentservice.Model.FeignRequest;
 import com.commentservice.Repository.CommentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,9 @@ import java.time.LocalDateTime;
 public class CommentService {
 
     @Autowired
+    FeignLike feignLike;
+
+    @Autowired
     private CommentRepo commentRepo;
 
 
@@ -31,8 +36,14 @@ public class CommentService {
 
 
 
-    public List<CommentModel> showCommentsByPostId(String postId) {
-        return commentRepo.findBypostID(postId);
+    public FeignRequest showCommentsByPostId(String postId) {
+        FeignRequest feignRequest=new FeignRequest();
+        feignRequest.setLikesCount(feignLike.likeCount(postId));
+        feignRequest.setCommentModel(commentRepo.findBypostID(postId));
+
+
+
+        return feignRequest;
     }
 
     public CommentModel findByCommentId(String commentId) {
@@ -57,11 +68,6 @@ public class CommentService {
     public int commentCount(String postId){
         int count=this.commentRepo.findBypostID(postId).size();
         return count;
-
-
-
-
-
 
     }
 }
