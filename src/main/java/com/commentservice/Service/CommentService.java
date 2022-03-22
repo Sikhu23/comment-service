@@ -8,6 +8,8 @@ import com.commentservice.Model.FeignRequest;
 import com.commentservice.Model.FeignRequestUser;
 import com.commentservice.Repository.CommentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -41,10 +43,15 @@ public class CommentService {
 
 
 
-    public FeignRequest showCommentsByPostId(String postId) {
+    public FeignRequest showCommentsByPostId(String postId,int page,int pageSize) {
         FeignRequest feignRequest=new FeignRequest();
+        Pageable firstPage = PageRequest.of(page, pageSize);
         feignRequest.setLikesCount(feignLike.likeCount(postId));
-        feignRequest.setCommentModel(commentRepo.findBypostID(postId));
+        feignRequest.setCommentModel(commentRepo.findBypostID(postId,  firstPage));
+//        List<CommentModel> allComments = commentRepo.findBypostID(postId, firstPage);
+
+
+
 
 
 

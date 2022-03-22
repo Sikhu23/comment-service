@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.ws.rs.QueryParam;
 
 
 @RestController
@@ -56,8 +57,8 @@ public class CommentController {
 
 
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<FeignRequest> showCommentsByPostId(@PathVariable("postId") String postId) {
-        return new ResponseEntity<>(commentService.showCommentsByPostId(postId), HttpStatus.ACCEPTED);
+    public ResponseEntity< FeignRequest> showCommentsByPostId(@PathVariable("postId") String postId,  @QueryParam("page") int page, @QueryParam("pageSize") int pageSize) {
+        return new ResponseEntity<>(commentService.showCommentsByPostId(postId,page,pageSize), HttpStatus.ACCEPTED);
     }
 
 
