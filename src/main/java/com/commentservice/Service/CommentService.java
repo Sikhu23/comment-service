@@ -15,6 +15,10 @@ public class CommentService {
     private CommentRepo commentRepo;
 
 
+    public CommentModel findByCommentId(String commentId){
+        return this.commentRepo.findById(commentId).get();
+
+
     public CommentModel updateComment(CommentModel commentModel, String postId,String commentId){
         commentModel.setCommentID(commentId);
         commentModel.setUpdatedAt(LocalDateTime.now());
@@ -30,6 +34,7 @@ public class CommentService {
     public int commentCount(String postId){
         int count=this.commentRepo.findBypostID(postId).size();
         return count;
+
 
 
 
