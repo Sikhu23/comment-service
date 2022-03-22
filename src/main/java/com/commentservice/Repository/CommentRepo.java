@@ -13,4 +13,6 @@ public interface CommentRepo extends MongoRepository<CommentModel,String> {
 
     public List<CommentModel> findBypostID(String postId);
 
+
+
 }

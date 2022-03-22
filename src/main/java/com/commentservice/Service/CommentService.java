@@ -6,7 +6,10 @@ import com.commentservice.Repository.CommentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import java.time.LocalDateTime;
+
 
 @Service
 public class CommentService {
@@ -14,6 +17,10 @@ public class CommentService {
     @Autowired
     private CommentRepo commentRepo;
 
+
+
+    public List<CommentModel> showCommentsByPostId(String postId){
+        return commentRepo.findBypostID(postId);
 
     public CommentModel findByCommentId(String commentId){
         return this.commentRepo.findById(commentId).get();
@@ -34,6 +41,7 @@ public class CommentService {
     public int commentCount(String postId){
         int count=this.commentRepo.findBypostID(postId).size();
         return count;
+
 
 
 
