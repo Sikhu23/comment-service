@@ -19,8 +19,8 @@ public class CommentDTO {
     private String commentID;
 
 
-    @NotEmpty(message = "commentedBy is required")
-    private String commentedBy;
+    @NotEmpty(message = "commentedBy Object is required")
+    private User commentedBy;
 
     @NotEmpty(message = "comment is required")
     private String comment;

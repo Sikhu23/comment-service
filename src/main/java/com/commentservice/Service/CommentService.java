@@ -43,7 +43,7 @@ public class CommentService {
         commentModel.setUpdatedAt(LocalDateTime.now());
          this.commentRepo.save(commentModel);
          CommentDTO commentDTO=new CommentDTO(commentModel.getCommentID(),
-                 feignUser.findByID(commentModel.getCommentedBy()).getFirstName(),
+                 feignUser.findByID(commentModel.getCommentedBy()),
                  commentModel.getComment(),commentModel.getCreatedAt(),commentModel.getUpdatedAt(),
                  feignLike.likeCount(commentModel.getCommentID()));
 
@@ -68,7 +68,7 @@ public class CommentService {
         List<CommentDTO> commentDTOS = new ArrayList<>();
         for(CommentModel commentModel:commentModels){
             CommentDTO commentDTO1=new CommentDTO(commentModel.getCommentID(),
-                    feignUser.findByID(commentModel.getCommentedBy()).getFirstName(),
+                    feignUser.findByID(commentModel.getCommentedBy()),
                     commentModel.getComment(),commentModel.getCreatedAt(),commentModel.getUpdatedAt(),
                     feignLike.likeCount(commentModel.getCommentID()));
             commentDTOS.add(commentDTO1);
@@ -82,7 +82,7 @@ public class CommentService {
         try{
             CommentModel commentModel= commentRepo.findById(commentId).get();
             CommentDTO commentDTO = new CommentDTO(commentModel.getCommentID(),
-                    feignUser.findByID(commentModel.getCommentedBy()).getFirstName(),
+                    feignUser.findByID(commentModel.getCommentedBy()),
                     commentModel.getComment(),commentModel.getCreatedAt(),commentModel.getUpdatedAt(),
                     feignLike.likeCount(commentModel.getCommentID()));
             return  commentDTO;
@@ -101,7 +101,7 @@ public class CommentService {
         commentModel.setPostID(postId);
          commentRepo.save(commentModel);
          CommentDTO commentDTO=new CommentDTO(commentModel.getCommentID(),
-                 feignUser.findByID(commentModel.getCommentedBy()).getFirstName(),
+                 feignUser.findByID(commentModel.getCommentedBy()),
                  commentModel.getComment(),commentModel.getCreatedAt(),commentModel.getUpdatedAt(),
                  feignLike.likeCount(commentModel.getCommentID()));
          return commentDTO;
