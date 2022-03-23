@@ -19,11 +19,6 @@ public class CommentDTO {
     private String commentID;
 
 
-
-
-
-
-
     @NotEmpty(message = "commentedBy is required")
     private String commentedBy;
 

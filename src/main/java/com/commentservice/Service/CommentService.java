@@ -1,6 +1,7 @@
 package com.commentservice.Service;
 
 
+import com.commentservice.Exception.CommentNotFoundException;
 import com.commentservice.Feign.FeignLike;
 import com.commentservice.Feign.FeignUser;
 import com.commentservice.Model.CommentDTO;
@@ -61,6 +62,9 @@ public class CommentService {
         CommentDTO commentDTO=new CommentDTO();
         Pageable firstPage = PageRequest.of(page-1, pageSize);
         List<CommentModel> commentModels  = commentRepo.findBypostID(postId,firstPage);
+        if(commentModels.isEmpty()){
+            throw  new CommentNotFoundException("Comment Doesnot exist");
+        }
         List<CommentDTO> commentDTOS = new ArrayList<>();
         for(CommentModel commentModel:commentModels){
             CommentDTO commentDTO1=new CommentDTO(commentModel.getCommentID(),
@@ -75,12 +79,18 @@ public class CommentService {
     }
 
     public CommentDTO findByCommentId(String commentId) {
-        CommentModel commentModel= commentRepo.findById(commentId).get();
-        CommentDTO commentDTO = new CommentDTO(commentModel.getCommentID(),
-                feignUser.findByID(commentModel.getCommentedBy()).getFirstName(),
-                commentModel.getComment(),commentModel.getCreatedAt(),commentModel.getUpdatedAt(),
-                feignLike.likeCount(commentModel.getCommentID()));
-        return  commentDTO;
+        try{
+            CommentModel commentModel= commentRepo.findById(commentId).get();
+            CommentDTO commentDTO = new CommentDTO(commentModel.getCommentID(),
+                    feignUser.findByID(commentModel.getCommentedBy()).getFirstName(),
+                    commentModel.getComment(),commentModel.getCreatedAt(),commentModel.getUpdatedAt(),
+                    feignLike.likeCount(commentModel.getCommentID()));
+            return  commentDTO;
+
+        }
+        catch(Exception e){
+            throw  new CommentNotFoundException("Comment Doesnot exist");
+        }
     }
 
 
@@ -99,8 +109,13 @@ public class CommentService {
 
 
     public String deletebyCommentId(String commentId) {
-        this.commentRepo.deleteById(commentId);
-        return "Comment deleted successfully.";
+       if(commentRepo.findById(commentId).isPresent()){
+           this.commentRepo.deleteById(commentId);
+           return "Comment deleted successfully.";
+       }
+       else{
+           throw new CommentNotFoundException("Comment doesnot exist");
+       }
     }
 
     public int commentCount(String postId){
