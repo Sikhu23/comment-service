@@ -1,6 +1,7 @@
 package com.commentservice.Service;
 
 
+import com.commentservice.Const.ConstFile;
 import com.commentservice.Exception.CommentNotFoundException;
 import com.commentservice.Feign.FeignLike;
 import com.commentservice.Feign.FeignUser;
@@ -63,7 +64,7 @@ public class CommentService {
         Pageable firstPage = PageRequest.of(page-1, pageSize);
         List<CommentModel> commentModels  = commentRepo.findBypostID(postId,firstPage);
         if(commentModels.isEmpty()){
-            throw  new CommentNotFoundException("Comment Doesnot exist");
+            throw  new CommentNotFoundException(ConstFile.errorCode);
         }
         List<CommentDTO> commentDTOS = new ArrayList<>();
         for(CommentModel commentModel:commentModels){
@@ -89,7 +90,7 @@ public class CommentService {
 
         }
         catch(Exception e){
-            throw  new CommentNotFoundException("Comment Doesnot exist");
+            throw  new CommentNotFoundException(ConstFile.errorCode);
         }
     }
 
@@ -111,10 +112,10 @@ public class CommentService {
     public String deletebyCommentId(String commentId) {
        if(commentRepo.findById(commentId).isPresent()){
            this.commentRepo.deleteById(commentId);
-           return "Comment deleted successfully.";
+           return ConstFile.successCode;
        }
        else{
-           throw new CommentNotFoundException("Comment doesnot exist");
+           throw new CommentNotFoundException(ConstFile.errorCode);
        }
     }
 
