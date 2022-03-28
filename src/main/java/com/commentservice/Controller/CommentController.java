@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.ws.rs.QueryParam;
 
-
+@CrossOrigin(value="*")
 @RestController
 @RequestMapping("/posts/{postId}/comments")
 public class CommentController {
