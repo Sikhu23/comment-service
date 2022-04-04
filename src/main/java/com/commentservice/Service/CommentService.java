@@ -42,6 +42,7 @@ public class CommentService {
         commentModel.setPostID(postId);
         commentModel.setCreatedAt(LocalDateTime.now());
         commentModel.setUpdatedAt(LocalDateTime.now());
+
          this.commentRepo.save(commentModel);
          CommentDTO commentDTO=new CommentDTO(commentModel.getCommentID(),
                  feignUser.findByID(commentModel.getCommentedBy()),
