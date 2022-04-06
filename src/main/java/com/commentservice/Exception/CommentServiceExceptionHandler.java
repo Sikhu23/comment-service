@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 class CommentServiceExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({CommentNotFoundException.class})
+    @ExceptionHandler({CommentNotFoundException.class,UserNotFoundException.class,CommentIDExistsException.class})
     ResponseEntity customerNotFoundHandler(Exception exception, ServletWebRequest request){
         ApiError apiError = new ApiError();
         apiError.setMessage(exception.getMessage());

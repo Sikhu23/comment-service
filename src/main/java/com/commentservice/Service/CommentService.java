@@ -2,7 +2,9 @@ package com.commentservice.Service;
 
 
 import com.commentservice.Const.ConstFile;
+import com.commentservice.Exception.CommentIDExistsException;
 import com.commentservice.Exception.CommentNotFoundException;
+import com.commentservice.Exception.UserNotFoundException;
 import com.commentservice.Feign.FeignLike;
 import com.commentservice.Feign.FeignUser;
 import com.commentservice.Model.CommentDTO;
@@ -10,6 +12,7 @@ import com.commentservice.Model.CommentModel;
 import com.commentservice.Model.FeignRequest;
 import com.commentservice.Model.FeignRequestUser;
 import com.commentservice.Repository.CommentRepo;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,12 +47,17 @@ public class CommentService {
         commentModel.setUpdatedAt(LocalDateTime.now());
 
          this.commentRepo.save(commentModel);
-         CommentDTO commentDTO=new CommentDTO(commentModel.getCommentID(),
-                 feignUser.findByID(commentModel.getCommentedBy()),
-                 commentModel.getComment(),commentModel.getCreatedAt(),commentModel.getUpdatedAt(),
-                 feignLike.likeCount(commentModel.getCommentID()));
+        try{
+            CommentDTO commentDTO=new CommentDTO(commentModel.getCommentID(),
+                    feignUser.findByID(commentModel.getCommentedBy()),
+                    commentModel.getComment(),commentModel.getCreatedAt(),commentModel.getUpdatedAt(),
+                    feignLike.likeCount(commentModel.getCommentID()));
 
-         return commentDTO;
+            return commentDTO;
+        }
+        catch (FeignException e){
+            throw new UserNotFoundException("No User Found for this commentedBy ID");
+        }
     }
 
 
@@ -68,14 +76,20 @@ public class CommentService {
             throw  new CommentNotFoundException(ConstFile.errorCode);
         }
         List<CommentDTO> commentDTOS = new ArrayList<>();
-        for(CommentModel commentModel:commentModels){
-            CommentDTO commentDTO1=new CommentDTO(commentModel.getCommentID(),
-                    feignUser.findByID(commentModel.getCommentedBy()),
-                    commentModel.getComment(),commentModel.getCreatedAt(),commentModel.getUpdatedAt(),
-                    feignLike.likeCount(commentModel.getCommentID()));
-            commentDTOS.add(commentDTO1);
+        try{
+            for(CommentModel commentModel:commentModels){
+                CommentDTO commentDTO1=new CommentDTO(commentModel.getCommentID(),
+                        feignUser.findByID(commentModel.getCommentedBy()),
+                        commentModel.getComment(),commentModel.getCreatedAt(),commentModel.getUpdatedAt(),
+                        feignLike.likeCount(commentModel.getCommentID()));
+                commentDTOS.add(commentDTO1);
+            }
+            return  commentDTOS;
         }
-        return  commentDTOS;
+
+        catch (FeignException e){
+            throw new UserNotFoundException("No User Found for this commentedBy ID");
+        }
 
 
     }
@@ -90,6 +104,10 @@ public class CommentService {
             return  commentDTO;
 
         }
+        catch (FeignException e){
+            throw new UserNotFoundException("No User Found for this commentedBy ID");
+        }
+
         catch(Exception e){
             throw  new CommentNotFoundException(ConstFile.errorCode);
         }
@@ -97,16 +115,54 @@ public class CommentService {
 
 
     public CommentDTO updateComment(CommentModel commentModel, String postId,String commentId) {
-        commentModel.setCommentID(commentId);
-        commentModel.setUpdatedAt(LocalDateTime.now());
-        commentModel.setCreatedAt(commentRepo.findById(commentId).get().getCreatedAt());
-        commentModel.setPostID(postId);
-         commentRepo.save(commentModel);
-         CommentDTO commentDTO=new CommentDTO(commentModel.getCommentID(),
-                 feignUser.findByID(commentModel.getCommentedBy()),
-                 commentModel.getComment(),commentModel.getCreatedAt(),commentModel.getUpdatedAt(),
-                 feignLike.likeCount(commentModel.getCommentID()));
-         return commentDTO;
+       if(commentModel.getCommentID()==null || commentModel.getCommentID().equals(commentId)){
+           commentModel.setCommentID(commentId);
+           commentModel.setUpdatedAt(LocalDateTime.now());
+           commentModel.setCreatedAt(commentRepo.findById(commentId).get().getCreatedAt());
+           commentModel.setPostID(postId);
+
+           try{
+               CommentDTO commentDTO=new CommentDTO(commentModel.getCommentID(),
+                       feignUser.findByID(commentModel.getCommentedBy()),
+                       commentModel.getComment(),commentModel.getCreatedAt(),commentModel.getUpdatedAt(),
+                       feignLike.likeCount(commentModel.getCommentID()));
+
+               commentRepo.save(commentModel);
+               return commentDTO;
+           }
+           catch (FeignException e){
+               throw new UserNotFoundException("No User Found for this commentedBy ID");
+           }
+       }
+       else{
+           if(commentRepo.findById(commentModel.getCommentID()).isPresent() && commentRepo.findById(commentId).isPresent()){
+               throw new CommentIDExistsException("CommentID already exists in DB");
+           }
+           else if(commentRepo.findById(commentModel.getCommentID()).isPresent() && !commentRepo.findById(commentId).isPresent()){
+               throw new CommentNotFoundException("CommentID not exists");
+           }
+           else{
+               commentModel.setCommentID(commentModel.getCommentID());
+               commentModel.setUpdatedAt(LocalDateTime.now());
+               commentModel.setCreatedAt(commentRepo.findById(commentId).get().getCreatedAt());
+               commentModel.setPostID(postId);
+
+               try{
+                   CommentDTO commentDTO=new CommentDTO(commentModel.getCommentID(),
+                           feignUser.findByID(commentModel.getCommentedBy()),
+                           commentModel.getComment(),commentModel.getCreatedAt(),commentModel.getUpdatedAt(),
+                           feignLike.likeCount(commentModel.getCommentID()));
+
+                   commentRepo.save(commentModel);
+                   commentRepo.deleteById(commentId);
+                   return commentDTO;
+               }
+               catch (FeignException e){
+                   throw new UserNotFoundException("No User Found for this commentedBy ID");
+               }
+           }
+       }
+
     }
 
 
